@@ -1,16 +1,25 @@
 defmodule PentoWeb.WrongLive do
+  # This includes the Phoenix.LiveView functionality in this module.
   use PentoWeb, :live_view
 
-  alias PentoWeb.Router.Helpers, as: Routes
+  # alias PentoWeb.Router.Helpers, as: Routes
+  # alias Pento.Accounts
 
   # “The mount function returns a result tuple. The first element is either :ok or :error, and the second element has the initial contents of the socket.”
   def mount(_params, _session, socket) do
+    # socket |> IO.inspect(label: "Something")
     time = time()
     list = 1..10 |> Enum.to_list()
     # important to convert to string for comparision later
     target = Enum.random(list) |> to_string()
     has_ended = false
-    {:ok, assign(socket, score: 0, message: "Make a guess: ", time: time, target: target, has_ended: has_ended)}
+    {:ok, assign(socket,
+    score: 0,
+    message: "Make a guess: ",
+    time: time,
+    target: target,
+    has_ended: has_ended)}
+    # session_id: session["live_socket_id"])}
   end
 
   def render(assigns) do
@@ -25,6 +34,12 @@ defmodule PentoWeb.WrongLive do
         <%= for n <- 1..10 do %>
           <.link href="#" phx-click="guess" phx-value-number={n} ><%= n %></.link>
         <% end %>
+        <pre>
+          <%!-- <%= inspect @current_user%> --%>
+          <%!-- <%= @current_user.email%> --%>
+          <%= @current_user.username%>
+          <%= @session_id %>
+        </pre>
       </h2>
 
       <%!-- Come back in chapter 2 --%>

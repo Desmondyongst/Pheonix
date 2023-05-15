@@ -1,4 +1,4 @@
 postgres-data/*
 .minio.sys/
 *.minio
-../.postgres-data/
+.postgres-data/
