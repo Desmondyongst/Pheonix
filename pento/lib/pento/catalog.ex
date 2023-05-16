@@ -101,4 +101,26 @@ defmodule Pento.Catalog do
   def change_product(%Product{} = product, attrs \\ %{}) do
     Product.changeset(product, attrs)
   end
+
+  # The \\ %{} syntax is used in the function parameter to provide a default value
+  # for the attrs argument. It means that if the attrs argument is not provided when
+  # calling the function, it will default to an empty map %{}.
+
+  # Things to note when testing in iex, product need to be of type Product struct
+  # Also, to update in repo, Product need to have the PKEY (id)
+  # Also, make sure to do the necessary alias before calling the function
+
+  @doc """
+  Returns an %Ecto.Changeset{}` for tracking product changes.
+
+   ## Examples
+
+      iex> Pento.Catalog.markdown_product(Pento.Catalog.get_product!(1), %{unit_price: 7})
+  """
+
+  def markdown_product(%Product{} = product, attrs \\ %{}) do
+    product
+    |> Product.unit_price_changeset(attrs)
+    |> Repo.update()
+  end
 end
