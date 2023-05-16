@@ -3,7 +3,7 @@ defmodule Pento.Repo.Migrations.AddUsernameToUsers do
 
   def change do
     alter table(:users) do
-      add :username,  :string, null: false, unique: true
+      add :username,  :string, null: true, unique: true
     end
 
     # create unique_index(:users, [:username])
