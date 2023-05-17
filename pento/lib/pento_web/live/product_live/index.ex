@@ -1,3 +1,10 @@
+# Both index.ex and index.html.heex together implement a list of products.
+# Since our live view doesn’t implement a render function, the behaviour will fall back to
+# the default render/1 function and render the template that matches the name of the LiveView file,
+# pento/pento_web/live/index.html.heex.
+
+
+
 defmodule PentoWeb.ProductLive.Index do
   use PentoWeb, :live_view
 
@@ -7,13 +14,23 @@ defmodule PentoWeb.ProductLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     {:ok, stream(socket, :products, Catalog.list_products())}
+    # {:ok,
+    #   socket
+    #   |> assign(:greeting, "Welcome to Pento!!")
+    #   |> stream(:products, Catalog.list_products())
+    # }
   end
 
+  # The handle_params function’s job is to make any changes to the socket based on the requirements of the live_action.
+  # The function is a behaviour callback that must return a :noreply tuple with the updated socket.
   @impl true
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
+
+  # `apply_action` will pattern match based on the live_action
+  # This live view can handle different actions
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit Product")

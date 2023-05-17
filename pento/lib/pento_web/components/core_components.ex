@@ -393,6 +393,9 @@ defmodule PentoWeb.CoreComponents do
   slot :subtitle
   slot :actions
 
+
+  # A function that takes in an argument of some assigns and returns some HEEx markup.
+  # This is called a “function component”.
   def header(assigns) do
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
@@ -598,6 +601,8 @@ defmodule PentoWeb.CoreComponents do
     |> JS.focus_first(to: "##{id}-content")
   end
 
+
+  # This code uses an Elixir wrapper to make JavaScript available to our application!
   def hide_modal(js \\ %JS{}, id) do
     js
     |> JS.hide(

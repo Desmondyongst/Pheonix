@@ -1,4 +1,5 @@
 defmodule PentoWeb.Router do
+  # The live/4 macro function is implemented by the Phoenix.LiveView.Router module.
   use PentoWeb, :router
 
   import PentoWeb.UserAuth
@@ -79,11 +80,15 @@ defmodule PentoWeb.Router do
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
       live "/guess", WrongLive
 
+      # The first part(`live`) is the macro(function) definining the type of request, make available by the `use Pentoweb, :router`
+      # The `use` macro injects the PentoWeb.router/0 function into the current module, which in turns import Pheonix.LiveView.Router
+      # Format: 1) Macro function 2) URL pattern 3) LiveView module 4) live action
       live "/products", ProductLive.Index, :index
       live "/products/new", ProductLive.Index, :new
       live "/products/:id/edit", ProductLive.Index, :edit
       live "/products/:id", ProductLive.Show, :show
       live "/products/:id/show/edit", ProductLive.Show, :edit
+
 
 
     end

@@ -44,7 +44,9 @@ defmodule PentoWeb.WrongLive do
 
       <%!-- Come back in chapter 2 --%>
       <%= if @has_ended do %>
-        <button onclick="location.reload()">Reload Page</button>
+        <%!-- <button onclick="location.reload()">Reload Page</button> --%>
+        <.link patch={~p"/guess"}>Reload Page</.link>
+
       <% end %>
     """
   end
@@ -52,6 +54,18 @@ defmodule PentoWeb.WrongLive do
 def time() do
   DateTime.utc_now |> to_string
 end
+
+def handle_params(_params, _url, socket) do
+  list = 1..10 |> Enum.to_list()
+  # important to convert to string for comparision later
+  target = Enum.random(list) |> to_string()
+  {:noreply,
+    assign(socket,
+    target: target,
+    score: 0)
+  }
+end
+
 
 
 # “By adding the phx-click binding to the link element,
