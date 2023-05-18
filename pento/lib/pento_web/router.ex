@@ -79,6 +79,7 @@ defmodule PentoWeb.Router do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
       live "/guess", WrongLive
+      live "/promo", PromoLive
 
       # The first part(`live`) is the macro(function) definining the type of request, make available by the `use Pentoweb, :router`
       # The `use` macro injects the PentoWeb.router/0 function into the current module, which in turns import Pheonix.LiveView.Router

@@ -375,6 +375,9 @@ defmodule PentoWeb.CoreComponents do
   """
   slot :inner_block, required: true
 
+  # This error/1 function component uses the :for directive to iteratively invoke the
+  # component for every msg in @errors. If there are no errors, we won’t see the error
+  # tag at all.
   def error(assigns) do
     ~H"""
     <p class="mt-3 flex gap-3 text-sm leading-6 text-rose-600 phx-no-feedback:hidden">
