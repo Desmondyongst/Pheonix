@@ -39,6 +39,7 @@ defmodule PentoWeb.ProductLive.FormComponent do
 
   # Keep component up to date whenever either the parent live view or the component itself changes
   # The assigns attribute is a map containing the live_component attributes we provided: the title, action, product, and so on.
+  # I think if the form save already, update will be called again?
   @impl true
   def update(%{product: product} = assigns, socket) do
     changeset = Catalog.change_product(product)
@@ -93,6 +94,8 @@ defmodule PentoWeb.ProductLive.FormComponent do
          |> put_flash(:info, "Product created successfully")
          |> push_patch(to: socket.assigns.patch)}
 
+      # The %Ecto.Changeset{} is just to ptattern match and check that
+      # we are passing in a changeset
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
     end

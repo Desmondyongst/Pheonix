@@ -83,12 +83,19 @@ defmodule PentoWeb.Router do
       # The first part(`live`) is the macro(function) definining the type of request, make available by the `use Pentoweb, :router`
       # The `use` macro injects the PentoWeb.router/0 function into the current module, which in turns import Pheonix.LiveView.Router
       # Format: 1) Macro function 2) URL pattern 3) LiveView module 4) live action
+      # :index (read all products), :new (create a product), :edit (update a product), :show(read one product)
       live "/products", ProductLive.Index, :index
       live "/products/new", ProductLive.Index, :new
       live "/products/:id/edit", ProductLive.Index, :edit
       live "/products/:id", ProductLive.Show, :show
       live "/products/:id/show/edit", ProductLive.Show, :edit
 
+      live "/faqs", FaqLive.Index, :index
+      live "/faqs/new", FaqLive.Index, :new
+      live "/faqs/:id/edit", FaqLive.Index, :edit
+
+      live "/faqs/:id", FaqLive.Show, :show
+      live "/faqs/:id/show/edit", FaqLive.Show, :edit
 
 
     end
