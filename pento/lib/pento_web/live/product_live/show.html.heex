@@ -18,7 +18,19 @@
   <:item title="Sku"><%= @product.sku %></:item>
 </.list>
 
+<%!--  @product.image_upload is from the database, see handle_params ins show.ex--%>
+<div>
+  <img
+    alt="product image" width="200"
+    src={@product.image_upload}
+  >
+</div>
+
 <.back navigate={~p"/products"}>Back to products</.back>
+
+
+
+
 
 <%!-- show on_cancel is what happen when the modal is cancelled --%>
 <.modal :if={@live_action == :edit} id="product-modal" show on_cancel={JS.patch(~p"/products/#{@product}")}>

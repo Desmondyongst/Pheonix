@@ -3,6 +3,8 @@
     <:subtitle>promo code for 10% off their first game purchase!</:subtitle>
 </.header>
 
+<%!-- You’ll use phx-debounce when you want to rate limit form events, like phx-change, for a single field. --%>
+<%!-- Let’s use debounce to delay the firing of the phx-change event until a user has blurred the email input field: --%>
 <div>
     <.simple_form
         for={@form}
@@ -18,6 +20,3 @@
         </:actions>
     </.simple_form>
 </div>
-
-
-      

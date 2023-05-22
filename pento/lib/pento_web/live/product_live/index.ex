@@ -11,6 +11,10 @@ defmodule PentoWeb.ProductLive.Index do
   alias Pento.Catalog
   alias Pento.Catalog.Product
 
+
+  # The @product assignment we added to the form component’s socket assigns will continue to track all of the product fields—name, description, and the like.
+  # However, file upload configuration and the status of all uploads for the form will be tracked in a separate assignment, @uploads.
+  # We need to call the allow_upload/3 function in update/2 function for live component and in mount for live view
   @impl true
   def mount(_params, _session, socket) do
     {:ok, stream(socket, :products, Catalog.list_products())}

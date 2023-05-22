@@ -17,9 +17,12 @@ defmodule PentoWeb.ProductLive.FormComponent do
       <%!-- The `@form` is from the assign_form(changeset), where it is passed into the socket--%>
       <%!-- We’ll talk about the @myself assignment in Chapter 7 --%>
       <%!-- For now, know it’s a way to make sure events go to the form component and not the live view. --%>
+      <%!-- Our code uses the phx-disable-with binding to configure the text of a disabled submit button. --%>
+      <%!-- To enable the form for multipart use, add the miultipart attribute --%>
       <.simple_form
         for={@form}
         id="product-form"
+        multipart
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
@@ -28,10 +31,33 @@ defmodule PentoWeb.ProductLive.FormComponent do
         <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:unit_price]} type="number" label="Unit price" step="any" />
         <.input field={@form[:sku]} type="number" label="Sku" />
+
+        <%!-- This adds a “drag and drop” container to our form, where the phx-drop-target HTML attribute points
+        to the @uploads.image.ref socket assignment. This is the ID that LiveView JavaScript uses to identify the
+        file upload form field and tie it to the correct key in socket.assigns.uploads. --%>
+        <div phx-drop-target={@uploads.image.ref}>
+          <.label>Image</.label>
+            <.live_file_input upload={@uploads.image} />
+        </div>
+
         <:actions>
           <.button phx-disable-with="Saving...">Save Product</.button>
         </:actions>
       </.simple_form>
+
+      <%= for image <- @uploads.image.entries do %>
+        <div class="mt-4">
+          <.live_img_preview entry={image} width="60" />
+        </div>
+        <progress value={image.progress} max="100" />
+
+        <%= for err <- upload_errors(@uploads.image, image) do %>
+          <.error><%= err %></.error>
+        <% end %>
+      <% end %>
+
+
+
     </div>
     """
   end
@@ -39,16 +65,25 @@ defmodule PentoWeb.ProductLive.FormComponent do
 
   # Keep component up to date whenever either the parent live view or the component itself changes
   # The assigns attribute is a map containing the live_component attributes we provided: the title, action, product, and so on.
-  # I think if the form save already, update will be called again?
+  # Update called when you assign something to the socket
   @impl true
-  def update(%{product: product} = assigns, socket) do
+  def update(%{product: product} = assigns = _passed_assigns, socket) do
+    # assigns |>    IO.inspect(label: "assign")
     changeset = Catalog.change_product(product)
 
     # All that remains is to take the socket, drop in all of the attributes that we defined in the live_component tag, and add the new assignment to our changeset.
     {:ok,
      socket
+    #  |> IO.inspect(label: "socket 1 ")
      |> assign(assigns)
-     |> assign_form(changeset)}
+    #  |> IO.inspect(label: "socket 2 ")
+
+     |> assign_form(changeset)
+     |> allow_upload(:image,
+        accept: ~w(.jpg .jpeg .png),
+        max_entries: 1,
+        max_file_size: 9_000_000,
+        auto_upload: true)}
   end
 
   @impl true
@@ -68,23 +103,27 @@ defmodule PentoWeb.ProductLive.FormComponent do
     save_product(socket, socket.assigns.action, product_params)
   end
 
-  # Which save_product is called depends on the pattern matching
-  defp save_product(socket, :edit, product_params) do
-    case Catalog.update_product(socket.assigns.product, product_params) do
-      {:ok, product} ->
-        notify_parent({:saved, product})
+    # Which save_product is called depends on the pattern matching
+    defp save_product(socket, :edit, params) do
+      product_params = params_with_image(socket, params)
+      case Catalog.update_product(socket.assigns.product, product_params) do
+        {:ok, product} ->
+          notify_parent({:saved, product})
 
-        {:noreply,
-         socket
-         |> put_flash(:info, "Product updated successfully")
-         |> push_patch(to: socket.assigns.patch)}
+          {:noreply,
+           socket
+           |> put_flash(:info, "Product updated successfully")
+           |> push_patch(to: socket.assigns.patch)}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
+          # Error message inside changeset
+        {:error, %Ecto.Changeset{} = changeset} ->
+          {:noreply, assign_form(socket, changeset)}
+      end
     end
-  end
 
-  defp save_product(socket, :new, product_params) do
+  defp save_product(socket, :new, params) do
+    product_params = params_with_image(socket, params)
+
     case Catalog.create_product(product_params) do
       {:ok, product} ->
         notify_parent({:saved, product})
@@ -106,4 +145,26 @@ defmodule PentoWeb.ProductLive.FormComponent do
   end
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
+
+  # Function to save the image upload and add the saved image data to the product params.
+  # It will need to consume any uploaded images, save them, and then return a list of product parameters including the image_upload path to the user.
+  # We use a LiveView function called consume_uploaded_entries/3 to iterate through the list of entries in socket.assigns.uploads.image.entries and process each one with a custom
+  # callback function, upload_static_file/2.
+  def params_with_image(socket, params) do
+    path = socket
+      |> consume_uploaded_entries(:image, &upload_static_file/2)
+      |> List.first
+    Map.put(params, "image_upload", path)
+  end
+
+  defp upload_static_file(%{path: path}, _entry) do
+    # Plug in your production image file persistence implementation here
+    filename = Path.basename(path)
+    dest = Path.join("priv/static/images", filename)
+    # Copy the file to destination
+    File.cp!(path, dest)
+
+    {:ok, ~p"/images/#{filename}"}
+  end
+
 end

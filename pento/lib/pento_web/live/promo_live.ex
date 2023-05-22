@@ -18,8 +18,6 @@ defmodule PentoWeb.PromoLive do
   end
 
   def assign_changeset(%{assigns: %{recipient: recipient}} = socket) do
-    socket |> IO.inspect(label: "")
-
     socket
     |> assign(:changeset, Promo.change_recipient(recipient))
   end
@@ -36,32 +34,20 @@ defmodule PentoWeb.PromoLive do
       |> Promo.change_recipient(recipient_params)
       |> Map.put(:action, :validate)
 
-      {:noreply,
-        socket
-        |> assign(:form, to_form(changeset))}
+    {:noreply,
+     socket
+     |> assign(:form, to_form(changeset))}
   end
-
 
   def handle_event("save", %{"recipient" => recipient_params}, %{assigns: %{recipient: recipient}} = socket) do
     # stub method
-    case Promo.send_promo(recipient, recipient_params) do
-      {:ok, _recipient} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Promo code sent successfully!")}
+    {key, msg} =
+      case Promo.send_promo(recipient, recipient_params) do
+        {:ok, _recipient} -> {:info, "Promo code sent successfully!"}
+        # Normally error don't return recipient i think
+        {:error, _recipient} -> {:error, "Error sending promo code!"}
+      end
 
-      # Normally error don't return recipient i think
-      {:error, _recipient} ->
-        {:noreply,
-        socket
-        |> put_flash(:error, "Error sending promo code!")}
-
-    end
-
+    {:noreply, socket |> put_flash(key, msg)}
   end
-
-
-
-
-
 end

@@ -79,6 +79,7 @@ defmodule PentoWeb.Router do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
       live "/guess", WrongLive
+      # Note that we’ve put our new route in the same live session as the original /guess route. This means they will share a root layout and share the on_mount callback, PentoWeb.UserAuthLive.on_mount/4, that validates the presence of the current user
       live "/promo", PromoLive
 
       # The first part(`live`) is the macro(function) definining the type of request, make available by the `use Pentoweb, :router`
@@ -90,6 +91,8 @@ defmodule PentoWeb.Router do
       live "/products/:id/edit", ProductLive.Index, :edit
       live "/products/:id", ProductLive.Show, :show
       live "/products/:id/show/edit", ProductLive.Show, :edit
+
+
 
       live "/faqs", FaqLive.Index, :index
       live "/faqs/new", FaqLive.Index, :new

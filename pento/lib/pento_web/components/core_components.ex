@@ -171,11 +171,13 @@ defmodule PentoWeb.CoreComponents do
         </:actions>
       </.simple_form>
   """
+
+  # Also, in core_components.ex, add the multipart attribute to the include option in the rest attribute to allow multipart uploads
   attr :for, :any, required: true, doc: "the datastructure for the form"
   attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
 
   attr :rest, :global,
-    include: ~w(autocomplete name rel action enctype method novalidate target),
+    include: ~w(autocomplete name rel action enctype method novalidate target multipart),
     doc: "the arbitrary HTML attributes to apply to the form tag"
 
   slot :inner_block, required: true
