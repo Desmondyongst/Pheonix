@@ -1,0 +1,18 @@
+<.header>
+    Search For Products Using SKU
+</.header>
+
+<%!-- You’ll use phx-debounce when you want to rate limit form events, like phx-change, for a single field. --%>
+<%!-- Let’s use debounce to delay the firing of the phx-change event until a user has blurred the email input field: --%>
+<div>
+    <.simple_form
+        for={@form}
+        id="search-form"
+        phx-change="validate"
+        phx-submit="save">
+        <.input field={@form[:sku]} type="number" label="Sku number" />
+        <:actions>
+        <.button phx-disable-with="Searching..."> Search</.button>
+        </:actions>
+    </.simple_form>
+</div>

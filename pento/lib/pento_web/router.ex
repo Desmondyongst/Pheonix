@@ -81,6 +81,7 @@ defmodule PentoWeb.Router do
       live "/guess", WrongLive
       # Note that we’ve put our new route in the same live session as the original /guess route. This means they will share a root layout and share the on_mount callback, PentoWeb.UserAuthLive.on_mount/4, that validates the presence of the current user
       live "/promo", PromoLive
+      live "/search", SearchLive
 
       # The first part(`live`) is the macro(function) definining the type of request, make available by the `use Pentoweb, :router`
       # The `use` macro injects the PentoWeb.router/0 function into the current module, which in turns import Pheonix.LiveView.Router
