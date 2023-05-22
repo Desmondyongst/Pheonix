@@ -43,7 +43,9 @@ defmodule PentoWeb.ProductLive.FormComponent do
         <:actions>
           <.button phx-disable-with="Saving...">Save Product</.button>
         </:actions>
+
       </.simple_form>
+
 
       <%= for image <- @uploads.image.entries do %>
         <div class="mt-4">
@@ -54,7 +56,17 @@ defmodule PentoWeb.ProductLive.FormComponent do
         <%= for err <- upload_errors(@uploads.image, image) do %>
           <.error><%= err %></.error>
         <% end %>
+
+        <div>
+          <%= for image <- @uploads.image.entries do %>
+            <%!-- <%= inspect image%> --%>
+            <%!-- If dont have {@myself}, it will call the handler in the parent live view --%>
+            <.button phx-click="cancel-upload" phx-target={@myself} phx-value-ref={image.ref}> Cancel upload</.button>
+          <% end %>
+        </div>
       <% end %>
+
+
 
 
 
@@ -164,7 +176,15 @@ defmodule PentoWeb.ProductLive.FormComponent do
     # Copy the file to destination
     File.cp!(path, dest)
 
+
     {:ok, ~p"/images/#{filename}"}
   end
+
+  # the ref key is specified in the render function of form_component.ex
+  # where phx-value-ref={image.ref}, after the phx-value is just the key
+  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :image, ref)}
+  end
+
 
 end
