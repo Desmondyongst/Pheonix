@@ -73,6 +73,30 @@ defmodule Pento.Catalog do
     |> Repo.update()
   end
 
+
+  # private name just to make it clearer what is the path
+  def remove_product_image(%Product{image_upload: path = _path_to_be_deleted} = product) do
+    # We remove from the database first then we remove the path
+    product
+    |> Product.remove_image_changeset()
+    # use the updated changeset to update the repo
+    |> Repo.update()
+    |> case do
+      {:ok, _updated_product} = ok ->
+        # remove the file in the path
+        filename = Path.basename(path)
+        path = Path.join("priv/static/images", filename)
+        # Copy the file to destination
+        File.rm!(path)
+
+        # the ok is the {:ok, p} as we assigned on top!!
+        # if there is error File.rm! will throw an exception
+        ok
+      error ->
+        error
+    end
+  end
+
   @doc """
   Deletes a product.
 

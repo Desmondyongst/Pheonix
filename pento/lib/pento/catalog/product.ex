@@ -9,25 +9,32 @@ defmodule Pento.Catalog.Product do
 
   # schema/1 function creates an Elixir struct that weaves in fields from a database table
   schema "products" do
-    field :description, :string
-    field :name, :string
-    field :sku, :integer
-    field :unit_price, :float
-    field :image_upload, :string #image_path
+    field(:description, :string)
+    field(:name, :string)
+    field(:sku, :integer)
+    field(:unit_price, :float)
+    # image_path
+    field(:image_upload, :string)
 
     # The timestamps function means our code will also have :inserted_at and updated_at timestamps.
     timestamps()
   end
 
-
   @doc false
   def changeset(product, attrs) do
+    # for it to be updated, is has to be inside the cast function
     product
     |> cast(attrs, [:name, :description, :unit_price, :sku, :image_upload])
-    |> validate_required([:name, :description, :unit_price, :sku, :image_upload])
+    |> validate_required([:name, :description, :unit_price, :sku])
     |> unique_constraint(:sku)
     |> validate_number(:unit_price, greater_than: 0.0)
   end
+
+
+  # @doc
+  # A changeset just to set the image_upload to nil
+  # Return the updated changeset
+  def remove_image_changeset(product), do: product |> change(image_upload: nil)
 
   @doc false
   def unit_price_changeset(%{unit_price: current_price} = product, attrs) do

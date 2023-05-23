@@ -23,6 +23,27 @@ defmodule PentoWeb.ProductLive.Show do
      |> assign(:own_message, "This is my own message!")}
   end
 
+
+  def handle_event("remove-upload", _params, %{assigns: %{product: product}} = socket) do
+
+    case Catalog.remove_product_image(product) do
+      {:ok, updated_product} ->
+        {:noreply,
+           socket
+            # assigned the updated_product to the socket so it will rerender
+           |> assign(:product, updated_product)
+           |> put_flash(:info, "Image removed successfully!")}
+
+
+      # Error message inside changeset
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply,
+          socket
+          |> put_flash(:error, "Error removing image!")
+        }
+    end
+  end
+
   # Private function that is called in handle_params
   defp page_title(:show), do: "Show Product"
   defp page_title(:edit), do: "Edit Product"

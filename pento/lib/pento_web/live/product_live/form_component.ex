@@ -57,6 +57,7 @@ defmodule PentoWeb.ProductLive.FormComponent do
           <.error><%= err %></.error>
         <% end %>
 
+        <%!-- button to cancel upload --%>
         <div>
           <%= for image <- @uploads.image.entries do %>
             <%!-- <%= inspect image%> --%>
@@ -65,10 +66,6 @@ defmodule PentoWeb.ProductLive.FormComponent do
           <% end %>
         </div>
       <% end %>
-
-
-
-
 
     </div>
     """

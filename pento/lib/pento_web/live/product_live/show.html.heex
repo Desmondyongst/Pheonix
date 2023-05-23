@@ -19,17 +19,23 @@
 </.list>
 
 <%!--  @product.image_upload is from the database, see handle_params ins show.ex--%>
-<div>
-  <img
-    alt="product image" width="200"
-    src={@product.image_upload}
-  >
-</div>
+<%= if @product.image_upload do %>
+  <div>
+    <img
+      alt="product image" width="200"
+      src={@product.image_upload}
+    >
+  </div>
+
+  <%!-- <%= inspect @product.image_upload %> --%>
+
+  <%!-- no need phx-target={@myself} because we in live view not live component --%>
+  <div style="margin-top: 10px">
+    <.button phx-click="remove-upload"> Remove upload</.button> 
+  </div>
+<% end %>
 
 <.back navigate={~p"/products"}>Back to products</.back>
-
-
-
 
 
 <%!-- show on_cancel is what happen when the modal is cancelled --%>
