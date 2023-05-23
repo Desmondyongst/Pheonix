@@ -36,7 +36,7 @@ defmodule PentoWeb.ProductLive.FormComponent do
         to the @uploads.image.ref socket assignment. This is the ID that LiveView JavaScript uses to identify the
         file upload form field and tie it to the correct key in socket.assigns.uploads. --%>
         <div phx-drop-target={@uploads.image.ref}>
-          <.label>Image</.label>
+          <.label>Thumbnail Image</.label>
             <.live_file_input upload={@uploads.image} />
         </div>
 
@@ -173,6 +173,10 @@ defmodule PentoWeb.ProductLive.FormComponent do
     # Copy the file to destination
     File.cp!(path, dest)
 
+
+
+    # Minio - Come back after chapter 8
+    # Pento.ProductImages.store({path, %{id: 1, filename: "test"}}) |> IO.inspect(label: "WAFLFFLFELFEL")
 
     {:ok, ~p"/images/#{filename}"}
   end

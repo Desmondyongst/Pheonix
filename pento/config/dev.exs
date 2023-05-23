@@ -78,15 +78,19 @@ config :phoenix, :plug_init_mode, :runtime
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
-# config :waffle,
-#   storage: Waffle.Storage.S3,
-#   # or {:system, "AWS_S3_BUCKET"}
-#   bucket: "pento-bucket"
+# Minio
+config :waffle,
+  storage: Waffle.Storage.S3,
+  # this is the name of the bucket on the on http://localhost:9001/
+  bucket: "pento-bucket"
 
-# # asset_host: "localhost" # or {:system, "ASSET_HOST"}
+config :ex_aws,
+  json_codec: Jason,
+  access_key_id: System.get_env("AWS_ACCESS_KEY", "KyhqCYybE3fYxQIp"),
+  secret_access_key: System.get_env("AWS_SECRET_KEY", "YnpMPrHT2mWenUzIOd7gyqYTda06RzFH")
 
-# # Minio
-# config :ex_aws,
-#   json_codec: Jason,
-#   access_key_id: System.get_env("AWS_ACCESS_KEY", "KyhqCYybE3fYxQIp"),
-#   secret_access_key: System.get_env("AWS_SECRET_KEY", "YnpMPrHT2mWenUzIOd7gyqYTda06RzFH")
+config :ex_aws, :s3,
+  scheme: "http://",
+  host: "127.0.0.1",
+  port: 9099,
+  region: "ap-southeast-1"
