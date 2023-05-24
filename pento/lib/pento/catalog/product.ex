@@ -7,6 +7,8 @@ defmodule Pento.Catalog.Product do
   # thanks to the call to import Ecto.Changeset in the Pento.Catalog.Product module
   import Ecto.Changeset
 
+  alias Pento.Survey.Rating
+
   # schema/1 function creates an Elixir struct that weaves in fields from a database table
   schema "products" do
     field(:description, :string)
@@ -18,6 +20,10 @@ defmodule Pento.Catalog.Product do
 
     # The timestamps function means our code will also have :inserted_at and updated_at timestamps.
     timestamps()
+
+    # We alias the new Rating schema and make use of it in the has_many relationship.
+    # This will give us the ability to ask a given product for its ratings by calling product.ratings.
+    has_many :ratings, Rating
   end
 
   @doc false

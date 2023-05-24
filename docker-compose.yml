@@ -18,7 +18,7 @@ services:
       - ./.postgres-data:/var/lib/postgresql/data
 
   minio:
-    container_name: minio-s3-ldr
+    container_name: minio-s3-pento
     image: minio/minio
     command: server /data --console-address ":9001"
     hostname: minio

@@ -14,7 +14,7 @@ defmodule PentoWeb.FaqLiveTest do
   end
 
   describe "Index" do
-    setup [:create_faq]
+    setup [:create_faq, :register_and_log_in_user]
 
     test "lists all faqs", %{conn: conn, faq: faq} do
       {:ok, _index_live, html} = live(conn, ~p"/faqs")
@@ -78,7 +78,7 @@ defmodule PentoWeb.FaqLiveTest do
   end
 
   describe "Show" do
-    setup [:create_faq]
+    setup [:create_faq, :register_and_log_in_user]
 
     test "displays faq", %{conn: conn, faq: faq} do
       {:ok, _show_live, html} = live(conn, ~p"/faqs/#{faq}")

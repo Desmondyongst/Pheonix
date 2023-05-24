@@ -21,6 +21,11 @@ defmodule Pento.Catalog do
     Repo.all(Product)
   end
 
+  def list_products_with_user_rating(user) do
+    Product.Query.with_user_ratings(user)
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single product.
 
@@ -73,7 +78,6 @@ defmodule Pento.Catalog do
     |> Repo.update()
   end
 
-
   # private name just to make it clearer what is the path
   def remove_product_image(%Product{image_upload: path = _path_to_be_deleted} = product) do
     # We remove from the database first then we remove the path
@@ -92,6 +96,7 @@ defmodule Pento.Catalog do
         # the ok is the {:ok, p} as we assigned on top!!
         # if there is error File.rm! will throw an exception
         ok
+
       error ->
         error
     end
