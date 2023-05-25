@@ -3,14 +3,14 @@
 # the default render/1 function and render the template that matches the name of the LiveView file,
 # pento/pento_web/live/index.html.heex.
 
-
-
 defmodule PentoWeb.ProductLive.Index do
+  # The liveview/1 function is inside pento_web.exe
+  # Ultimately lead to app.html.heex being displayed
+
   use PentoWeb, :live_view
 
   alias Pento.Catalog
   alias Pento.Catalog.Product
-
 
   # The @product assignment we added to the form component’s socket assigns will continue to track all of the product fields—name, description, and the like.
   # However, file upload configuration and the status of all uploads for the form will be tracked in a separate assignment, @uploads.
@@ -31,7 +31,6 @@ defmodule PentoWeb.ProductLive.Index do
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
-
 
   # `apply_action` will pattern match based on the live_action
   # This live view can handle different actions

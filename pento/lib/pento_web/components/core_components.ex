@@ -398,7 +398,6 @@ defmodule PentoWeb.CoreComponents do
   slot :subtitle
   slot :actions
 
-
   # A function that takes in an argument of some assigns and returns some HEEx markup.
   # This is called a “function component”.
   def header(assigns) do
@@ -453,6 +452,7 @@ defmodule PentoWeb.CoreComponents do
       <table class="w-[40rem] mt-11 sm:w-full">
         <thead class="text-sm text-left leading-6 text-zinc-500">
           <tr>
+            <%!-- The collection of :col slots becomes available in the table/1 function component as the @col assignment. --%>
             <th :for={col <- @col} class="p-0 pr-6 pb-4 font-normal"><%= col[:label] %></th>
             <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
           </tr>
@@ -605,7 +605,6 @@ defmodule PentoWeb.CoreComponents do
     |> JS.add_class("overflow-hidden", to: "body")
     |> JS.focus_first(to: "##{id}-content")
   end
-
 
   # This code uses an Elixir wrapper to make JavaScript available to our application!
   def hide_modal(js \\ %JS{}, id) do

@@ -1,3 +1,22 @@
+<div class="container px-6 py-6">  
+  <div class="flex items-center gap-4">   
+      <%!-- I think the @current_user is when the user logs in the it is assigned --%>
+      <%= if @current_user do %>
+        <b><%= @current_user.email%></b>
+        <.link href={~p"/products"}>Products</.link>
+        <.link href={~p"/survey"}>Survey</.link>
+        <.link href={~p"/users/settings"}>Settings</.link>
+        <%!-- This is commonly used in web applications to trigger a log out action, 
+        where the server expects a DELETE request to invalidate the user's session 
+        and perform any necessary cleanup. --%>
+        <.link href={~p"/users/log_out"} method="delete">Log out</.link>
+      <% else %>
+        <.link href={~p"/users/register"}>Register</.link>
+        <.link href={~p"/users/log_in"}>Log in</.link>
+      <% end %>
+  </div>
+</div>
+
 <.flash_group flash={@flash} />
 <div class="left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]">
   <svg

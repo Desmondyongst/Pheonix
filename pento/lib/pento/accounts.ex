@@ -7,7 +7,6 @@ defmodule Pento.Accounts do
   alias Pento.Repo
 
   alias Pento.Accounts.{User, UserToken, UserNotifier}
-
   ## Database getters
 
   @doc """
@@ -22,6 +21,7 @@ defmodule Pento.Accounts do
       nil
 
   """
+  
   def get_user_by_email(email) when is_binary(email) do
     Repo.get_by(User, email: email)
   end

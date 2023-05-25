@@ -19,9 +19,6 @@ defmodule PentoWeb.PageController do
     # redirect(conn, to: ~p"/guess")
   end
 
-
-
-
   # Alternative method, but not as good as never use pattern matching
 
   # halt() is to close the connection when redirect to prevent loop issue
