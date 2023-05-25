@@ -4,6 +4,9 @@ defmodule PentoWeb.SurveyLive do
   alias PentoWeb.DemographicLive
   alias Pento.Survey
 
+  alias PentoWeb.HtmlLive
+  alias PentoWeb.HtmlListLive
+
   alias __MODULE__.Component
 
   # We need the current user in the socket, but `UserAuth.on_mount/4` function in user_auth.ex (which call mount_current_user) already added it to the

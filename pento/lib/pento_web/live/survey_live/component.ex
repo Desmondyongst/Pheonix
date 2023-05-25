@@ -17,11 +17,11 @@ defmodule PentoWeb.SurveyLive.Component do
       <%= render_slot(@inner_block) %>
     </h3>
 
-    <%!-- <pre> --%>
-    <%!-- <%= inspect assigns %> --%>
-    <%!-- <% %{inner_block: [%{inner_block: block_fn}]} = assigns%>
-      <%= inspect(block_fn.(assigns.__changed__, assigns))%> --%>
-    <%!-- </pre> --%>
+    <%!-- <pre>
+    <%= inspect assigns %>
+    <% %{inner_block: [%{inner_block: block_fn}]} = assigns%>
+      <%= inspect(block_fn.(assigns.__changed__, assigns))%>
+    </pre> --%>
     """
   end
 end
