@@ -57,7 +57,6 @@ defmodule PentoWeb.FaqLive.FormComponent do
   defp save_faq(socket, :edit, faq_params) do
     case Forum.update_faq(socket.assigns.faq, faq_params) do
       {:ok, faq} ->
-        # IO.inspect(label: "hey!")
         notify_parent({:saved, faq})
 
         {:noreply,
@@ -67,6 +66,7 @@ defmodule PentoWeb.FaqLive.FormComponent do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         # IO.inspect(label: "ERROR!")
+        # I think assign_form returns the modified socket
         {:noreply, assign_form(socket, changeset)}
     end
   end
@@ -87,6 +87,10 @@ defmodule PentoWeb.FaqLive.FormComponent do
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    # It's important to understand that assign/3 does not return a value itself.
+    # Instead, it modifies the assigns map within the LiveView socket,
+    # and the modified socket is then returned as part of the overall response from
+    # the function that calls assign/3.
     assign(socket, :form, to_form(changeset))
   end
 

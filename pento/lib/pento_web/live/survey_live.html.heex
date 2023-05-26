@@ -5,7 +5,11 @@
 <%= if @demographic do %>
   <DemographicLive.Show.details demographic={@demographic} />
 <% else %>
-  <h2>Demographic Form Coming Soon!</h2>
+  <.live_component
+    module={DemographicLive.Form}
+    id="demographic-form"
+    current_user={@current_user}
+  />
 <% end %>
 
 <HtmlLive.ConfigMessage.render message="This is the configurable message #1">
@@ -20,6 +24,5 @@
   This is the innerblock content
 </HtmlLive.ConfigMessage.render>
 
-<HtmlListLive.ListOfItems.render list_of_items={["Item 1",
-"Item 2", "Item 3", "Item 4", "Item 5"]}>
+<HtmlListLive.ListOfItems.render list_of_items={["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"]}>
 </HtmlListLive.ListOfItems.render>

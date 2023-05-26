@@ -25,4 +25,17 @@ defmodule PentoWeb.SurveyLive do
       Survey.get_demographic_by_user(current_user)
     )
   end
+
+  # This is the syntax for handle_info
+  # def handle_info({:custom_message, payload}, socket) do
+  # The return value of handle_info/2 should be a tuple with {:noreply, socket}
+  def handle_info({:created_demographic, demographic}, socket) do
+    {:noreply, handle_demographic_created(socket, demographic)}
+  end
+
+  def handle_demographic_created(socket, demographic) do
+    socket
+    |> put_flash(:info, "Demographic created successfully")
+    |> assign(:demographic, demographic)
+  end
 end
