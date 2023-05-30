@@ -1,0 +1,35 @@
+<div>
+    <!-- This is for using live component   -->
+    <!--
+    <div style="margin-bottom: 10px">
+        <.button phx-disable-with="Sending..." phx-click="toggle" phx-target={@myself}>
+            <%= if @toggle do %>
+                - contract
+            <% else %>
+                + expand
+            <% end %>
+        </.button>
+
+        <div style={"display: #{if @toggle, do: 'block', else: 'none'}"}>
+            Content shown!
+        </div>
+
+    </div>
+    -->
+
+
+    <!--  This is for using JS -->
+    <!-- The JS.push is to send it to the event handler for toggle, the target is to send it to itself-->
+    <button phx-click={JS.toggle(to: "#content") |> JS.push("toggle", target: @myself)} >
+        <%= if @toggle do %>
+            - contract
+        <% else %>
+            + expand
+        <% end %>
+    </button>
+
+    <div>
+        <div id="content">Content Shown</div>
+    </div>
+
+</div>

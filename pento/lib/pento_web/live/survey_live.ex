@@ -8,6 +8,7 @@ defmodule PentoWeb.SurveyLive do
   alias PentoWeb.HtmlLive
   alias PentoWeb.HtmlListLive
   alias PentoWeb.RatingLive
+  alias PentoWeb.ToggleButtonLive
 
   alias __MODULE__.Component
 
@@ -15,10 +16,12 @@ defmodule PentoWeb.SurveyLive do
   # `sockets.assigns.user` key. So the socket already contains the :current_user key
   def mount(_params, _session, socket) do
     # leaving the socket unchanged
-    {:ok,
-     socket
-     |> assign_demographic()
-     |> assign_products()}
+    {
+      :ok,
+      socket
+      |> assign_demographic()
+      |> assign_products()
+    }
   end
 
   defp assign_demographic(%{assigns: %{current_user: current_user}} = socket) do
@@ -44,6 +47,15 @@ defmodule PentoWeb.SurveyLive do
 
   def handle_info({:created_rating, updated_product, product_index}, socket) do
     {:noreply, handle_rating_created(socket, updated_product, product_index)}
+  end
+
+  def handle_info({:created_toggle, toggle_new}, socket) do
+    toggle_new
+    |> IO.inspect(label: "handled info is called")
+
+    {:noreply,
+     socket
+     |> assign(:toggle, toggle_new)}
   end
 
   # The handle_rating_created/3 reducer adds a flash message and updates the product

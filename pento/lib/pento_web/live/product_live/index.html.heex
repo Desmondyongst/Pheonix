@@ -14,7 +14,6 @@
   </:actions>
 </.header>
 
-
 <%!-- The table is a component with attributes for id, rows, and row_click. --%>
 <%!-- The rows attribute `rows={@streams.products}` has a list of items, and each one will be used to produce a row. --%>
 <%!-- When a user clicks a row, it will call JS.navigate with the route to show a product. --%>
@@ -25,9 +24,9 @@
   row_click={fn {_id, product} -> JS.navigate(~p"/products/#{product}") end}
 >
   <%!-- :col slot will implement a new column  --%>
-  <%!-- Under the hood, the table/1 function component iterates over the list of items 
-  in the @rows assignment and renders a table cell for each row/column combination. 
-  It yields each element in the @rows list back up to the index template and sets it 
+  <%!-- Under the hood, the table/1 function component iterates over the list of items
+  in the @rows assignment and renders a table cell for each row/column combination.
+  It yields each element in the @rows list back up to the index template and sets it
   equal to the product variable via the let assignment. --%>
 
   <:col :let={{_id, product}} label="Name"><%= product.name %></:col>
@@ -53,7 +52,7 @@
 
 <%!-- :if is a directive and the element wil show only if the associated value is true --%>
 <.modal :if={@live_action in [:new, :edit]} id="product-modal" show on_cancel={JS.patch(~p"/products")}>
-<%!-- The outer modal provides a window that the user can show and hide. 
+<%!-- The outer modal provides a window that the user can show and hide.
 The inner component provides a form for editing new projects and creating new ones. --%>
 <%!-- It uses the value of @product.id if it exists, otherwise it sets it to :new. --%>
   <.live_component
