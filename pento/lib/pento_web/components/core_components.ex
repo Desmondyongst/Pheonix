@@ -304,16 +304,13 @@ defmodule PentoWeb.CoreComponents do
 
   def input(%{type: "rating"} = assigns) do
     ~H"""
-      <select
-        id={@id}
-        name={@name}
-        class="border focus:ring-zinc-500"
-        multiple={@multiple}
-        {@rest}
-      >
-        <option :if={@prompt} value=""><%= @prompt %></option>
-        <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
-      </select>
+    <select id={@id} name={@name} class="border focus:ring-zinc-500" multiple={@multiple} {@rest}>
+      <option :if={@prompt} value=""><%= @prompt %></option>
+      <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+    </select>
+
+    <%!-- added this line below for Your Turn portion --%>
+    <.error :for={msg <- @errors}><%= msg %></.error>
     """
   end
 

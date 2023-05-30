@@ -29,6 +29,16 @@ defmodule PentoWeb.RatingLive.Form do
     assign(socket, :form, to_form(changeset))
   end
 
+  @impl true
+  def handle_event("validate", %{"rating" => rating_params}, socket) do
+    changeset =
+      socket.assigns.rating
+      |> Survey.change_rating(rating_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign_form(socket, changeset)}
+  end
+
   def handle_event("save", %{"rating" => rating_params}, socket) do
     {:noreply, save_rating(socket, rating_params)}
   end

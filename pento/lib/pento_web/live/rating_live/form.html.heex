@@ -1,10 +1,9 @@
 <div>
   <!-- @id is passed in as attributes in survey_live.html.heex -->
   <!-- phx-change="save" is the for the `Your Turn` exercise  -->
-  <.simple_form for={@form} id={@id} phx-submit="save" phx-target={@myself}>
+  <.simple_form for={@form} id={@id} phx-submit="save" phx-change="validate" phx-target={@myself}>
     <.input field={@form[:user_id]} type="hidden" />
     <.input field={@form[:product_id]} type="hidden" />
-
     <!-- the type help to call the correct functional component in core_components   -->
     <!-- i think options are in the form of @options, @value-->
     <.input
@@ -15,6 +14,5 @@
     />
 
     <.button phx-disable-with="Saving...">Save</.button>
-
   </.simple_form>
 </div>

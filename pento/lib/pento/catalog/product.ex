@@ -29,13 +29,13 @@ defmodule Pento.Catalog.Product do
   @doc false
   def changeset(product, attrs) do
     # for it to be updated, is has to be inside the cast function
+
     product
     |> cast(attrs, [:name, :description, :unit_price, :sku, :image_upload])
     |> validate_required([:name, :description, :unit_price, :sku])
     |> unique_constraint(:sku)
     |> validate_number(:unit_price, greater_than: 0.0)
   end
-
 
   # @doc
   # A changeset just to set the image_upload to nil

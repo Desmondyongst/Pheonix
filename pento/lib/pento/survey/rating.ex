@@ -21,11 +21,38 @@ defmodule Pento.Survey.Rating do
   end
 
   @doc false
+  # def changeset(rating, attrs) do
+  #   rating
+  #   |> cast(attrs, [:stars, :user_id, :product_id])
+  #   |> validate_required([:stars, :user_id, :product_id])
+  #   |> validate_inclusion(:stars, 1..5)
+  #   |> unique_constraint(:product_id, name: :index_ratings_on_user_product)
+  # end
+
   def changeset(rating, attrs) do
     rating
     |> cast(attrs, [:stars, :user_id, :product_id])
-    |> validate_required([:stars, :user_id, :product_id])
+    |> validate_required([:user_id, :product_id])
+    |> validate_stars_selection()
     |> validate_inclusion(:stars, 1..5)
     |> unique_constraint(:product_id, name: :index_ratings_on_user_product)
+  end
+
+  defp validate_stars_selection(changeset) do
+    selection = get_field(changeset, :stars)
+
+    case selection do
+      # If "Rating" is selected
+      nil ->
+        # OR THIS (RMB NEED REASSIGN!)
+        # changeset = add_error(changeset, :stars, "Please select a rating!")
+
+        changeset
+        |> add_error(:stars, "Please select a rating!")
+
+      _ ->
+        changeset
+        |> validate_required(:stars)
+    end
   end
 end
