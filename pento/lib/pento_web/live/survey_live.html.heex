@@ -1,9 +1,15 @@
 <Component.hero content="Survey">
   Please fill out our survey
 </Component.hero>
-
+<!-- If no demographic exists, and the socket assigns key of :demographic points
+to nil, the template renders the demographic form. Otherwise, we render the
+demographic show component and call on the RatingLive.Index.products/1
+function component to add the product ratings to our view. -->
 <%= if @demographic do %>
   <DemographicLive.Show.details demographic={@demographic} />
+  <hr />
+  <br />
+  <RatingLive.Index.product_lists products={@products} current_user={@current_user} />
 <% else %>
   <.live_component
     module={DemographicLive.Form}
