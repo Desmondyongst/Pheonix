@@ -11,6 +11,7 @@ defmodule PentoWeb.Admin.SurveyResultsLive do
      |> assign(assigns)
      # add the default age filter of "all"
      |> assign_age_group_filter()
+     |> assign_gender_filter()
      |> assign_products_with_average_ratings()
      |> assign_dataset()
      |> assign_chart()
@@ -22,21 +23,35 @@ defmodule PentoWeb.Admin.SurveyResultsLive do
     |> assign(:age_group_filter, "all")
   end
 
+  def assign_gender_filter(socket) do
+    socket
+    |> assign(:gender_filter, "all")
+  end
+
   defp assign_products_with_average_ratings(
-         %{assigns: %{age_group_filter: age_group_filter}} = socket
+         %{assigns: %{age_group_filter: age_group_filter, gender_filter: gender_filter}} = socket
        ) do
     socket
     |> assign(
       :products_with_average_ratings,
       # we want to pass in a map after we dereference from the socket
-      get_products_with_average_ratings(%{age_group_filter: age_group_filter})
+      get_products_with_average_ratings(%{
+        age_group_filter: age_group_filter,
+        gender_filter: gender_filter
+      })
       # Catalog.products_with_average_ratings(%{age_group_filter: age_group_filter})
     )
   end
 
-  defp get_products_with_average_ratings(filter) do
+  defp get_products_with_average_ratings(%{
+         age_group_filter: age_group_filter,
+         gender_filter: gender_filter
+       }) do
     # In Ecto, if you call Repo.all(query) where query is a query struct and there are no eligible rows matching the query conditions, the Repo.all/1 function will return an empty list ([]).
-    case Catalog.products_with_average_ratings(filter) do
+    case Catalog.products_with_average_ratings(%{
+           age_group_filter: age_group_filter,
+           gender_filter: gender_filter
+         }) do
       [] ->
         Catalog.products_with_zero_ratings()
 
@@ -118,5 +133,20 @@ defmodule PentoWeb.Admin.SurveyResultsLive do
 
   def assign_age_group_filter(socket, age_group_filter) do
     assign(socket, :age_group_filter, age_group_filter)
+  end
+
+  # Our event handler responds by updating the age group filter in socket assigns and then re-invoking the rest of our reducer pipeline. The reducer pipeline will operate on the new age group filter to fetch an updated list of products with average ratings and construct the SVG chart with that updated list. Then, the template is re-rendered with this new state.
+  def handle_event("gender_filter", %{"gender_filter" => gender_filter}, socket) do
+    {:noreply,
+     socket
+     |> assign_gender_filter(gender_filter)
+     |> assign_products_with_average_ratings()
+     |> assign_dataset()
+     |> assign_chart()
+     |> assign_chart_svg()}
+  end
+
+  def assign_gender_filter(socket, gender_filter) do
+    assign(socket, :gender_filter, gender_filter)
   end
 end

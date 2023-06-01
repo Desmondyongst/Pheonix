@@ -3,8 +3,35 @@
     <!--<%= inspect @products_with_average_ratings %>-->
     <div id="survey-results-component">
         <div class="container">
-            <!-- filters should go here-->
-            <div>
+            <!-- age group filters should go here-->
+            <div style={"margin: 15px"}>
+                <!-- The for={:gender_filter} attribute in the <.form> component is used to specify a unique identifier for the form within the LiveView context. It is typically used when you have multiple forms in a LiveView to differentiate them and handle their events separately.-->
+                <!-- id="gender-form": This assigns the ID attribute to the form element, allowing you to reference it using JavaScript or CSS. -->
+                <.form
+                for={:gender_filter}
+                phx-change="gender_filter"
+                phx-target={@myself}
+                id="gender-form">
+                    <label>By gender:</label>
+                    <select name="gender_filter" id="gender_filter">
+                        <%= for gender <-
+                            [
+                                "all",
+                                "female",
+                                "male",
+                                "other",
+                                "prefer not to say"
+                            ] do %>
+                            <!-- Match the gender selection with the current @gender_filter if socket. If matched, then the option will have a tick beside -->
+                            <option value={gender} selected={@gender_filter == gender}>
+                                <%= gender %>
+                            </option>
+                        <% end %>
+                    </select>
+                </.form>
+            </div>
+            <!-- age group filters should go here-->
+            <div style={"margin: 15px"}>
                 <.form
                 for={:age_group_filter}
                 phx-change="age_group_filter"

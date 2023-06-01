@@ -59,6 +59,7 @@ defmodule Pento.Catalog.Product.Query do
     |> join(:inner, [u: u], d in Demographic, as: :d, on: d.user_id == u.id)
   end
 
+  # This section is for filter_by_age_group
   def filter_by_age_group(query \\ base(), filter) do
     query
     |> apply_age_group_filter(filter)
@@ -120,4 +121,22 @@ defmodule Pento.Catalog.Product.Query do
   #   # put in functions
   #   |> where([d: d], d.year_of_birth >= ^(DateTime.utc_now().year - 18))
   # end
+
+  # This is for filter by gender
+  def filter_by_gender(query \\ base(), filter) do
+    query
+    |> apply_gender_filter(filter)
+  end
+
+  # match with other filter such as "all", need to put before
+  defp apply_gender_filter(query, "all") do
+    IO.inspect(label: "called")
+    query
+  end
+
+  # if other filter then you use WHERE clause
+  defp apply_gender_filter(query, filter) do
+    query
+    |> where([d: d], d.gender == ^filter)
+  end
 end

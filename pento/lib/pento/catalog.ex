@@ -153,12 +153,16 @@ defmodule Pento.Catalog do
     |> Repo.update()
   end
 
-  def products_with_average_ratings(%{age_group_filter: age_group_filter}) do
+  def products_with_average_ratings(%{
+        age_group_filter: age_group_filter,
+        gender_filter: gender_filter
+      }) do
     Product.Query.with_average_ratings()
     |> Product.Query.join_users()
     |> Product.Query.join_demographics()
     # Note this age_group_filter passed into filter_by_age_group is not a map
     |> Product.Query.filter_by_age_group(age_group_filter)
+    |> Product.Query.filter_by_gender(gender_filter)
     |> Repo.all()
   end
 
