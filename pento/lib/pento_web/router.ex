@@ -87,6 +87,8 @@ defmodule PentoWeb.Router do
       # I think the live action is to allows you to define multiple actions within a single LiveView module and choose the appropriate action based on the route being accessed.
       live("/survey", SurveyLive, :index)
 
+      live("/admin/dashboard", Admin.DashboardLive)
+
       # The first part(`live`) is the macro(function) definining the type of request, make available by the `use Pentoweb, :router`
       # The `use` macro injects the PentoWeb.router/0 function into the current module, which in turns import Pheonix.LiveView.Router
       # Format: 1) Macro function 2) URL pattern 3) LiveView module 4) live action

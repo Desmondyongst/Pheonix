@@ -27,8 +27,9 @@
         <.link href={~p"/products"}>Products</.link>
         <.link href={~p"/survey"}>Survey</.link>
         <.link href={~p"/users/settings"}>Settings</.link>
-        <%!-- This is commonly used in web applications to trigger a log out action, 
-        where the server expects a DELETE request to invalidate the user's session 
+        <.link href={~p"/admin/dashboard"}>Dashboard</.link>
+        <%!-- This is commonly used in web applications to trigger a log out action,
+        where the server expects a DELETE request to invalidate the user's session
         and perform any necessary cleanup. --%>
         <.link href={~p"/users/log_out"} method="delete">Log out</.link>
       <% else %>
@@ -42,9 +43,9 @@
 <main class="px-4 py-20 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-2xl">
     <.flash_group flash={@flash} />
-     <%!-- LiveView renders the root layout first, rendering an <%= @inner_content %> block inside 
-     the body tags. Then, the app layout is rendered, which displays the markup in the header tag, 
-     followed by another call to render <%= @inner_content %>. This in turn renders the template for 
+     <%!-- LiveView renders the root layout first, rendering an <%= @inner_content %> block inside
+     the body tags. Then, the app layout is rendered, which displays the markup in the header tag,
+     followed by another call to render <%= @inner_content %>. This in turn renders the template for
      the current live view. --%>
     <%= @inner_content %>
   </div>

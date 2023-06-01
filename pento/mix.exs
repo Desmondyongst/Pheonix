@@ -51,7 +51,7 @@ defmodule Pento.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-
+      {:contex, "~> 0.4.0"},
       {:waffle, "~> 1.1"},
 
       # If using S3:
