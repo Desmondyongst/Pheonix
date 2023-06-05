@@ -1,9 +1,16 @@
 <div>
+
   <!-- @id is passed in as attributes in survey_live.html.heex -->
   <!-- phx-change="save" is the for the `Your Turn` exercise  -->
+
+
+
+  <!-- we need things such as id={"#{@id}-user_id"} for the input field if not we will get error msg
+  "utils.js:19 Multiple IDs detected: rating_product_id. Ensure unique element ids."
+   -->
   <.simple_form for={@form} id={@id} phx-submit="save" phx-change="validate" phx-target={@myself}>
-    <.input field={@form[:user_id]} type="hidden" />
-    <.input field={@form[:product_id]} type="hidden" />
+    <.input field={@form[:user_id]} type="hidden" id={"#{@id}-user_id"} />
+    <.input field={@form[:product_id]} type="hidden" id={"#{@id}-product_id"} />
     <!-- the type help to call the correct functional component in core_components   -->
     <!-- i think options are in the form of @options, @value-->
     <.input
@@ -11,6 +18,7 @@
       type="rating"
       prompt="Rating"
       options={["★★★★★": 5, "★★★★": 4, "★★★": 3, "★★": 2, "★": 1]}
+      id={"#{@id}-rating_stars"}
     />
 
     <.button phx-disable-with="Saving...">Save</.button>

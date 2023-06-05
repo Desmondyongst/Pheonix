@@ -16,6 +16,12 @@ defmodule Pento.Catalog.Product.Query do
     |> preload_user_ratings(user)
   end
 
+  # This function get the rating for a particular user and product
+  def with_user_ratings(pid, user) do
+    with_user_ratings(user)
+    |> where([p: p], p.id == ^pid)
+  end
+
   def preload_user_ratings(query, user) do
     # It constructs a rating query, whichr etrieves the ratings associated with a given user
     ratings_query = Rating.Query.preload_user(user)

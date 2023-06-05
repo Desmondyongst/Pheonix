@@ -42,6 +42,9 @@ defmodule Pento.Catalog do
   """
   def get_product!(id), do: Repo.get!(Product, id)
 
+  def get_product_with_user_rating(pid, user),
+    do: Product.Query.with_user_ratings(pid, user) |> Repo.one()
+
   @doc """
   Creates a product.
 

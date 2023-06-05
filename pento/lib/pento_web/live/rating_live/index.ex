@@ -48,6 +48,9 @@ defmodule PentoWeb.RatingLive.Index do
 
   # This is called for each product in a loop
   def product_rating(%{product: %{ratings: ratings}} = assigns) do
+    IO.inspect(label: "this is called")
+    ratings |> Enum.empty?() |> IO.inspect(label: "condition")
+
     ~H"""
     <div><%= @product.name %></div>
     <%!-- I think if no rating, then will return nil which is falsy, else will return true  --%>
@@ -58,13 +61,20 @@ defmodule PentoWeb.RatingLive.Index do
     <%= if ratings |> Enum.empty?() do %>
       <div>
         <.live_component module={RatingLive.Form}
-          id = {"rating=form=#{@product.id}"}
+          id = {"rating-form-#{@product.id}"}
           product={@product}
           product_index={@index}
           current_user={@current_user} />
       </div>
     <% else %>
-      <Show.stars rating={ratings |> List.first()} />
+      <%!-- this is trying for livecomponent --%>
+      <.live_component module={RatingLive.Show}
+        id = {"rating-#{@product.id}"}
+        product_index={@index}
+        product={@product}
+        rating={ratings |> List.first()}/>
+
+      <%!-- <Show.stars rating={ratings |> List.first()} /> --%>
     <% end %>
     """
   end

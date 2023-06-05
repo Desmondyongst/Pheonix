@@ -49,6 +49,27 @@ defmodule PentoWeb.SurveyLive do
     {:noreply, handle_rating_created(socket, updated_product, product_index)}
   end
 
+  def handle_info(
+        {:deleted_rating, {index, pid}},
+        %{assigns: %{products: products, current_user: user}} = socket
+      ) do
+    # |> assign_products()
+
+    %{p: Catalog.get_product!(pid)} |> IO.inspect(label: "deleted_rating")
+
+    {
+      :noreply,
+      socket
+      # Or can assign_products() also can but not as lightweight
+      # |> assign_products()
+      |> assign(
+        :products,
+        List.replace_at(products, index, Catalog.get_product_with_user_rating(pid, user))
+      )
+      |> put_flash(:info, "Rating removed successfully")
+    }
+  end
+
   def handle_info({:created_toggle, toggle_new}, socket) do
     toggle_new
     |> IO.inspect(label: "handled info is called")
@@ -75,10 +96,6 @@ defmodule PentoWeb.SurveyLive do
   end
 
   def assign_products(%{assigns: %{current_user: current_user}} = socket) do
-    assign(socket, :products, list_products(current_user))
-  end
-
-  defp list_products(user) do
-    Catalog.list_products_with_user_rating(user)
+    assign(socket, :products, Catalog.list_products_with_user_rating(current_user))
   end
 end
