@@ -6,6 +6,7 @@ defmodule PentoWeb.ProductLive.Show do
   use PentoWeb, :live_view
 
   alias Pento.Catalog
+  alias PentoWeb.Presence
 
   @impl true
   def mount(_params, _session, socket) do
@@ -16,31 +17,44 @@ defmodule PentoWeb.ProductLive.Show do
   # http://localhost:4000/products/2, so u need to populate the page with the correct product
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    product = Catalog.get_product!(id)
+    maybe_track_user(product, socket)
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:product, Catalog.get_product!(id))
+     |> assign(:product, product)
      |> assign(:own_message, "This is my own message!")}
   end
 
+  # Pattern matching to ensure that the :live_action is :show
+  def maybe_track_user(
+        product,
+        %{assigns: %{live_action: :show, current_user: current_user}} = socket
+      ) do
+    # Also, remember handle_params/3 will fire twice for a new page: once when the initial page loads and once when the page’s WebSocket connection is established.
+    # We track after the socket is connected
+    if connected?(socket) do
+      Presence.track_user(self(), product, current_user.email)
+    end
+  end
+
+  def maybe_track_user(_product, _socket), do: nil
 
   def handle_event("remove-upload", _params, %{assigns: %{product: product}} = socket) do
-
     case Catalog.remove_product_image(product) do
       {:ok, updated_product} ->
         {:noreply,
-           socket
-            # assigned the updated_product to the socket so it will rerender
-           |> assign(:product, updated_product)
-           |> put_flash(:info, "Image removed successfully!")}
-
+         socket
+         # assigned the updated_product to the socket so it will rerender
+         |> assign(:product, updated_product)
+         |> put_flash(:info, "Image removed successfully!")}
 
       # Error message inside changeset
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply,
-          socket
-          |> put_flash(:error, "Error removing image!")
-        }
+         socket
+         |> put_flash(:error, "Error removing image!")}
     end
   end
 

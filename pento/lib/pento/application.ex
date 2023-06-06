@@ -17,6 +17,9 @@ defmodule Pento.Application do
       # Start Finch
       {Finch, name: Pento.Finch},
       # Start the Endpoint (http/https)
+
+      # Added in Chapter 9
+      PentoWeb.Presence,
       PentoWeb.Endpoint
       # Start a worker by calling: Pento.Worker.start_link(arg)
       # {Pento.Worker, arg}

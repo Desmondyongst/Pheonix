@@ -47,10 +47,9 @@ defmodule PentoWeb.RatingLive.Index do
   end
 
   # This is called for each product in a loop
+  # ~H requires a variable named "assigns" to exist and be set to a map
+  # @product refer to the assigns which is the parameter passed in
   def product_rating(%{product: %{ratings: ratings}} = assigns) do
-    IO.inspect(label: "this is called")
-    ratings |> Enum.empty?() |> IO.inspect(label: "condition")
-
     ~H"""
     <div><%= @product.name %></div>
     <%!-- I think if no rating, then will return nil which is falsy, else will return true  --%>

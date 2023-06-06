@@ -1,16 +1,13 @@
 defmodule PentoWeb.SurveyLive do
   use PentoWeb, :live_view
 
-  alias PentoWeb.DemographicLive
-  alias Pento.Survey
-  alias Pento.Catalog
-
-  alias PentoWeb.HtmlLive
-  alias PentoWeb.HtmlListLive
-  alias PentoWeb.RatingLive
-  alias PentoWeb.ToggleButtonLive
+  alias PentoWeb.{DemographicLive, HtmlLive, HtmlListLive, RatingLive, ToggleButtonLive, Endpoint}
+  alias Pento.{Survey, Catalog}
 
   alias __MODULE__.Component
+
+  # This is like a constant declaration
+  @survey_results_topic "survey_results"
 
   # We need the current user in the socket, but `UserAuth.on_mount/4` function in user_auth.ex (which call mount_current_user) already added it to the
   # `sockets.assigns.user` key. So the socket already contains the :current_user key
@@ -53,20 +50,9 @@ defmodule PentoWeb.SurveyLive do
         {:deleted_rating, {index, pid}},
         %{assigns: %{products: products, current_user: user}} = socket
       ) do
-    # |> assign_products()
-
-    %{p: Catalog.get_product!(pid)} |> IO.inspect(label: "deleted_rating")
-
     {
       :noreply,
-      socket
-      # Or can assign_products() also can but not as lightweight
-      # |> assign_products()
-      |> assign(
-        :products,
-        List.replace_at(products, index, Catalog.get_product_with_user_rating(pid, user))
-      )
-      |> put_flash(:info, "Rating removed successfully")
+      handle_rating_deleted(socket, products, index, pid, user)
     }
   end
 
@@ -90,9 +76,24 @@ defmodule PentoWeb.SurveyLive do
         updated_product,
         product_index
       ) do
+    Endpoint.broadcast(@survey_results_topic, "rating_created_or_deleted", %{})
+
     socket
     |> put_flash(:info, "Rating submitted successfully")
     |> assign(:products, List.replace_at(products, product_index, updated_product))
+  end
+
+  def handle_rating_deleted(socket, products, index, pid, user) do
+    Endpoint.broadcast(@survey_results_topic, "rating_created_or_deleted", %{})
+
+    socket
+    # Or can assign_products() also can but not as lightweight
+    # |> assign_products()
+    |> assign(
+      :products,
+      List.replace_at(products, index, Catalog.get_product_with_user_rating(pid, user))
+    )
+    |> put_flash(:info, "Rating removed successfully")
   end
 
   def assign_products(%{assigns: %{current_user: current_user}} = socket) do

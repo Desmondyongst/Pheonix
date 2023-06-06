@@ -18,9 +18,21 @@ defmodule PentoWeb.Admin.SurveyResultsLive do
      |> assign_chart_svg()}
   end
 
+  # If the socket already has a value at either of the :age_group_filter or :gender_filter keys, then it should retain that value. Otherwise, it should set the default value to "all".
+  # the first time the key `age_group_filter` will be missing
+  def assign_age_group_filter(%{assigns: %{age_group_filter: age_group_filter}} = socket) do
+    socket
+    |> assign(:age_group_filter, age_group_filter)
+  end
+
   def assign_age_group_filter(socket) do
     socket
     |> assign(:age_group_filter, "all")
+  end
+
+  def assign_gender_filter(%{assigns: %{gender_filter: gender_filter}} = socket) do
+    socket
+    |> assign(:gender_filter, gender_filter)
   end
 
   def assign_gender_filter(socket) do
