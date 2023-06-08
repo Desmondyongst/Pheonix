@@ -3,6 +3,7 @@ defmodule PentoWeb.ProductLive.FormComponent do
   use PentoWeb, :live_component
 
   alias Pento.Catalog
+  alias Pento.Catalog.ProductImage
 
   @impl true
   def render(assigns) do
@@ -35,9 +36,14 @@ defmodule PentoWeb.ProductLive.FormComponent do
         <%!-- This adds a “drag and drop” container to our form, where the phx-drop-target HTML attribute points
         to the @uploads.image.ref socket assignment. This is the ID that LiveView JavaScript uses to identify the
         file upload form field and tie it to the correct key in socket.assigns.uploads. --%>
-        <div phx-drop-target={@uploads.image.ref}>
+        <div phx-drop-target={@uploads.thumbnail_image.ref}>
           <.label>Thumbnail Image</.label>
-            <.live_file_input upload={@uploads.image} />
+            <.live_file_input upload={@uploads.thumbnail_image} />
+        </div>
+
+        <div phx-drop-target={@uploads.product_images.ref}>
+          <.label>Product Images</.label>
+            <.live_file_input upload={@uploads.product_images} />
         </div>
 
         <:actions>
@@ -47,26 +53,45 @@ defmodule PentoWeb.ProductLive.FormComponent do
       </.simple_form>
 
 
-      <%= for image <- @uploads.image.entries do %>
+      <!-- NOTE: THIS IS FOR THUMBNAIL IMAGE -->
+      <%= for image <- @uploads.thumbnail_image.entries do %>
         <div class="mt-4">
           <.live_img_preview entry={image} width="60" />
         </div>
         <progress value={image.progress} max="100" />
 
-        <%= for err <- upload_errors(@uploads.image, image) do %>
+        <%= for err <- upload_errors(@uploads.thumbnail_image, image) do %>
           <.error><%= err %></.error>
         <% end %>
 
         <%!-- button to cancel upload --%>
         <div>
-          <%= for image <- @uploads.image.entries do %>
+          <%= for image <- @uploads.thumbnail_image.entries do %>
             <%!-- <%= inspect image%> --%>
             <%!-- If dont have {@myself}, it will call the handler in the parent live view --%>
-            <.button phx-click="cancel-upload" phx-target={@myself} phx-value-ref={image.ref}> Cancel upload</.button>
+            <.button phx-click="cancel-upload-thumbnail" phx-target={@myself} phx-value-ref={image.ref}> Cancel upload</.button>
           <% end %>
         </div>
       <% end %>
 
+      <!-- NOTE: THIS IS FOR PRODUCT IMAGES -->
+      <%= for image <- @uploads.product_images.entries do %>
+        <div class="mt-4">
+          <.live_img_preview entry={image} width="60" />
+        </div>
+        <progress value={image.progress} max="100" />
+
+        <%= for err <- upload_errors(@uploads.product_images, image) do %>
+          <.error><%= err %></.error>
+        <% end %>
+
+        <%!-- button to cancel upload --%>
+        <div>
+            <%!-- <%= inspect image%> --%>
+            <%!-- If dont have {@myself}, it will call the handler in the parent live view --%>
+            <.button phx-click="cancel-upload-product-images" phx-target={@myself} phx-value-ref={image.ref}> Cancel upload</.button>
+        </div>
+      <% end %>
     </div>
     """
   end
@@ -87,9 +112,15 @@ defmodule PentoWeb.ProductLive.FormComponent do
      #  |> IO.inspect(label: "socket 2 ")
 
      |> assign_form(changeset)
-     |> allow_upload(:image,
+     |> allow_upload(:thumbnail_image,
        accept: ~w(.jpg .jpeg .png),
        max_entries: 1,
+       max_file_size: 9_000_000,
+       auto_upload: true
+     )
+     |> allow_upload(:product_images,
+       accept: ~w(.jpg .jpeg .png),
+       max_entries: 5,
        max_file_size: 9_000_000,
        auto_upload: true
      )}
@@ -112,7 +143,7 @@ defmodule PentoWeb.ProductLive.FormComponent do
     save_product(socket, socket.assigns.action, product_params)
   end
 
-  # Which save_product is called depends on the pattern matching
+  # NOTE: WHICH SAVE_PRODUCT GET CALLED DEPENDS ON THE PATTERN MATCHING
   defp save_product(socket, :edit, params) do
     product_params = params_with_image(socket, params)
 
@@ -156,20 +187,40 @@ defmodule PentoWeb.ProductLive.FormComponent do
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 
-  # Function to save the image upload and add the saved image data to the product params.
-  # It will need to consume any uploaded images, save them, and then return a list of product parameters including the image_upload path to the user.
-  # We use a LiveView function called consume_uploaded_entries/3 to iterate through the list of entries in socket.assigns.uploads.image.entries and process each one with a custom
-  # callback function, upload_static_file/2.
+  # NOTE: THIS PART IS FOR THE IMAGES (BOTH THUMBNAIL AND PRODUCT_IMAGES)
+
   def params_with_image(socket, params) do
-    path =
+    thumbnail_path =
       socket
-      |> consume_uploaded_entries(:image, &upload_static_file/2)
+      |> consume_uploaded_entries(:thumbnail_image, &upload_static_file_thumbnail_image/2)
       |> List.first()
 
-    Map.put(params, "image_upload", path)
+    # NOTE: WE WANT PRODUCT_IMAGES_PATH TO BE A
+    product_images_path =
+      socket
+      |> consume_uploaded_entries(:product_images, &upload_static_file_product_images/2)
+      # NOTE: HERE WE REQUIRE A MAP FOR put_assoc in product.ex
+      |> Enum.map(fn string -> %{path: string} end)
+
+    Map.put(params, "image_upload", thumbnail_path)
+    # NOTE "product_images_upload" is key to a list in `show.html.heex`
+    |> Map.put("product_images", product_images_path)
   end
 
-  defp upload_static_file(%{path: path}, _entry) do
+  defp upload_static_file_thumbnail_image(%{path: path}, _entry) do
+    # Plug in your production image file persistence implementation here
+    filename = Path.basename(path)
+    dest = Path.join("priv/static/images", filename)
+    # Copy the file to destination
+    File.cp!(path, dest)
+
+    # Minio - Come back after chapter 8
+    # Pento.ProductImages.store({path, %{id: 1, filename: "test"}}) |> IO.inspect(label: "WAFLFFLFELFEL")
+
+    {:ok, ~p"/images/#{filename}"}
+  end
+
+  defp upload_static_file_product_images(%{path: path}, _entry) do
     # Plug in your production image file persistence implementation here
     filename = Path.basename(path)
     dest = Path.join("priv/static/images", filename)
@@ -184,7 +235,11 @@ defmodule PentoWeb.ProductLive.FormComponent do
 
   # the ref key is specified in the render function of form_component.ex
   # where phx-value-ref={image.ref}, after the phx-value is just the key
-  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
-    {:noreply, cancel_upload(socket, :image, ref)}
+  def handle_event("cancel-upload-thumbnail", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :thumbnail_image, ref)}
+  end
+
+  def handle_event("cancel-upload-product-images", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :product_images, ref)}
   end
 end

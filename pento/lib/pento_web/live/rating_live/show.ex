@@ -57,6 +57,7 @@ defmodule PentoWeb.RatingLive.Show do
 
   # product_index
   def handle_event("remove-rating", %{"ref" => ref}, %{assigns: %{product_index: index}} = socket) do
+    # The product_index is the socket is the one that changed/the one you clicked
     %{product_id: pid} = survey = Survey.get_rating!(ref)
     {:ok, _} = Survey.delete_rating(survey)
     send(self(), {:deleted_rating, {index, pid}})

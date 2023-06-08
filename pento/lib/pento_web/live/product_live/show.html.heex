@@ -18,11 +18,14 @@
   <:item title="Sku"><%= @product.sku %></:item>
 </.list>
 
+<!-- This part is for thumbnail image   -->
+
 <%!--  @product.image_upload is from the database, see handle_params ins show.ex--%>
 <%= if @product.image_upload do %>
+  <h2> Thumbnail image </h2>
   <div>
     <img
-      alt="product image" width="200"
+      alt="thumbnail image" width="200"
       src={@product.image_upload}
     >
   </div>
@@ -31,8 +34,28 @@
 
   <%!-- no need phx-target={@myself} because we in live view not live component --%>
   <div style="margin-top: 10px">
-    <.button phx-click="remove-upload"> Remove upload</.button> 
+    <.button phx-click="remove-upload"> Remove upload</.button>
   </div>
+<% end %>
+
+<!-- This part is for product images (can be more than one) -->
+
+<%= if not Enum.empty?(@product.product_images) do %>
+  <h2> Product images(s) </h2>
+  <%= for image <- @product.product_images do %>
+
+    <div style={"display: flex; align-items: center; margin-top: 10px"}>
+    <!-- need to do image.path as image is a map-->
+    <img
+      alt="product_image" width="200"
+      src={image.path}
+    >
+    <div style="margin-left: 10px">
+      <.button phx-click="remove-upload-product-images" phx-value-ref={image.id}> Remove upload</.button>
+    </div>
+  </div>
+
+  <% end %>
 <% end %>
 
 <.back navigate={~p"/products"}>Back to products</.back>

@@ -7,6 +7,8 @@ defmodule Pento.Catalog do
   alias Pento.Repo
 
   alias Pento.Catalog.Product
+  alias Pento.Catalog.ProductImage
+  alias Pento.ProductImage
 
   @doc """
   Returns the list of products.
@@ -40,7 +42,12 @@ defmodule Pento.Catalog do
       ** (Ecto.NoResultsError)
 
   """
-  def get_product!(id), do: Repo.get!(Product, id)
+  # def get_product!(id), do: Repo.get!(Product, id)
+  def get_product!(id) do
+    Repo.get!(Product, id)
+    # if preload more than one can do something like Repo.preload([:product_images, :ratings])
+    |> Repo.preload(:product_images)
+  end
 
   def get_product_with_user_rating(pid, user),
     do: Product.Query.with_user_ratings(pid, user) |> Repo.one()
@@ -59,7 +66,8 @@ defmodule Pento.Catalog do
   """
   def create_product(attrs \\ %{}) do
     %Product{}
-    |> Product.changeset(attrs)
+    # NOTE: Call creation_changeset instead of changeset
+    |> Product.create_or_update_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -67,7 +75,6 @@ defmodule Pento.Catalog do
   Updates a product.
 
   ## Examples
-
       iex> update_product(product, %{field: new_value})
       {:ok, %Product{}}
 
@@ -77,15 +84,46 @@ defmodule Pento.Catalog do
   """
   def update_product(%Product{} = product, attrs) do
     product
-    |> Product.changeset(attrs)
+    # |> Product.changeset(attrs)
+    |> Product.create_or_update_changeset(attrs)
     |> Repo.update()
   end
 
   # private name just to make it clearer what is the path
-  def remove_product_image(%Product{image_upload: path = _path_to_be_deleted} = product) do
+  def remove_thumbnail_image(%Product{image_upload: path = _path_to_be_deleted} = product) do
     # We remove from the database first then we remove the path
     product
     |> Product.remove_image_changeset()
+    # use the updated changeset to update the repo
+    |> Repo.update()
+    |> case do
+      {:ok, _updated_product} = ok ->
+        # remove the file in the path
+        filename = Path.basename(path)
+        path = Path.join("priv/static/images", filename)
+        # Copy the file to destination
+        File.rm!(path)
+
+        # the ok is the {:ok, p} as we assigned on top!!
+        # if there is error File.rm! will throw an exception
+        ok
+
+      error ->
+        error
+    end
+  end
+
+  def remove_product_images(
+        %Product{} = product,
+        product_image_id
+      ) do
+    # We remove from the database first then we remove the path
+
+    %{path: path} =
+      product_image_to_be_removed = ProductImage.get_product_image!(product_image_id)
+
+    product
+    |> Product.remove_product_image_changeset(product_image_to_be_removed)
     # use the updated changeset to update the repo
     |> Repo.update()
     |> case do

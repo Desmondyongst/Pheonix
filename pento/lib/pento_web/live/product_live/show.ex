@@ -28,6 +28,7 @@ defmodule PentoWeb.ProductLive.Show do
   end
 
   # Pattern matching to ensure that the :live_action is :show
+
   def maybe_track_user(
         product,
         %{assigns: %{live_action: :show, current_user: current_user}} = socket
@@ -42,7 +43,31 @@ defmodule PentoWeb.ProductLive.Show do
   def maybe_track_user(_product, _socket), do: nil
 
   def handle_event("remove-upload", _params, %{assigns: %{product: product}} = socket) do
-    case Catalog.remove_product_image(product) do
+    case Catalog.remove_thumbnail_image(product) do
+      {:ok, updated_product} ->
+        {:noreply,
+         socket
+         # assigned the updated_product to the socket so it will rerender
+         |> assign(:product, updated_product)
+         |> put_flash(:info, "Image removed successfully!")}
+
+      # Error message inside changeset
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Error removing image!")}
+    end
+  end
+
+  # NOTE: ref in this case is the image_id that is passed from the button
+  # NOTE: We obtain the product from the socket as we are at the specific product page
+  def handle_event(
+        "remove-upload-product-images",
+        %{"ref" => ref},
+        %{assigns: %{product: product}} = socket
+      ) do
+    # ref is the id of the product_image of the prodict to be removed
+    case Catalog.remove_product_images(product, ref) do
       {:ok, updated_product} ->
         {:noreply,
          socket
