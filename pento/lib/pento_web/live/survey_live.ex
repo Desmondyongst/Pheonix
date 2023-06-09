@@ -5,20 +5,30 @@ defmodule PentoWeb.SurveyLive do
   alias Pento.{Survey, Catalog}
 
   alias __MODULE__.Component
+  alias PentoWeb.Presence
 
-  # This is like a constant declaration
+  # NOTE: This is like a constant declaration, this is for when a user submit a rating, it will broadcast with this topic
   @survey_results_topic "survey_results"
 
   # We need the current user in the socket, but `UserAuth.on_mount/4` function in user_auth.ex (which call mount_current_user) already added it to the
   # `sockets.assigns.user` key. So the socket already contains the :current_user key
   def mount(_params, _session, socket) do
-    # leaving the socket unchanged
+    # NOTE: This is to
+    maybe_track_survey(socket)
+
     {
       :ok,
       socket
       |> assign_demographic()
       |> assign_products()
     }
+  end
+
+  # NOTE: This is to
+  def maybe_track_survey(%{assigns: %{current_user: current_user}} = socket) do
+    if connected?(socket) do
+      Presence.track_survey_takers(self(), current_user.id)
+    end
   end
 
   defp assign_demographic(%{assigns: %{current_user: current_user}} = socket) do
