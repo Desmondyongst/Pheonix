@@ -8,6 +8,7 @@ defmodule Pento.Catalog.Product do
   import Ecto.Changeset
 
   alias Pento.Survey.Rating
+  alias Pento.ShopContext.Shop
   alias Pento.Catalog.ProductImage
 
   # schema/1 function creates an Elixir struct that weaves in fields from a database table
@@ -26,6 +27,8 @@ defmodule Pento.Catalog.Product do
     # This will give us the ability to ask a given product for its ratings by calling product.ratings.
     has_many(:ratings, Rating)
     has_many(:product_images, ProductImage, on_replace: :delete)
+
+    many_to_many(:shops, Shop, join_through: "products_shops")
   end
 
   @doc false

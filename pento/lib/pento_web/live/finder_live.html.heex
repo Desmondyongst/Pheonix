@@ -1,0 +1,39 @@
+
+<.header>
+  Finder
+  <:actions>
+    <.link patch={~p"/finder/new"}>
+      <.button>New Pairing</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="pairing"
+  rows={@streams.product_shop}
+  row_click={fn {_id, pairing} -> JS.navigate(~p"/products/#{pairing.product.id}") end}
+>
+  <!-- # NOTE: When you use streams, you now has a _id -->
+  <:col :let={{_id, pairing}} label="Product Name"><%= pairing.product.name %></:col>
+  <:col :let={{_id, pairing}} label="Shop Name"><%= pairing.shop.name %></:col>
+  <:action :let={{_id, pairing}}>
+    <.link patch={~p"/finder/#{pairing.id}/edit"}>Edit</.link>
+  </:action>
+</.table>
+
+
+<%!-- :if is a directive and the element wil show only if the associated value is true --%>
+<.modal :if={@live_action in [:new, :edit]} id="pairing-modal" show on_cancel={JS.patch(~p"/finder")}>
+<%!-- The outer modal provides a window that the user can show and hide.
+The inner component provides a form for editing new projects and creating new ones. --%>
+<%!-- It uses the value of @product.id if it exists, otherwise it sets it to :new. --%>
+  <!-- NOTE: Need take a look again at this part-->
+  <.live_component
+    module={PentoWeb.FinderLive.FormComponent}
+    id={@product_shop.id || :new}
+    action={@live_action}
+    product_shop={@product_shop}
+    title={@page_title}
+    patch={~p"/finder"}
+  />
+</.modal>

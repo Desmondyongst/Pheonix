@@ -4,6 +4,7 @@ defmodule PentoWeb.ProductLive.FormComponent do
 
   alias Pento.Catalog
   alias Pento.Catalog.ProductImage
+  alias Pento.ShopContext
 
   @impl true
   def render(assigns) do
@@ -101,7 +102,7 @@ defmodule PentoWeb.ProductLive.FormComponent do
   # Update called when you assign something to the socket
   @impl true
   def update(%{product: product} = assigns = _passed_assigns, socket) do
-    # assigns |>    IO.inspect(label: "assign")
+    assigns |> IO.inspect(label: "assignasasdasdas")
     changeset = Catalog.change_product(product)
 
     # All that remains is to take the socket, drop in all of the attributes that we defined in the live_component tag, and add the new assignment to our changeset.
@@ -165,8 +166,11 @@ defmodule PentoWeb.ProductLive.FormComponent do
   defp save_product(socket, :new, params) do
     product_params = params_with_image(socket, params)
 
+    IO.inspect(label: "save product called")
+
     case Catalog.create_product(product_params) do
       {:ok, product} ->
+        IO.inspect(label: "ok")
         notify_parent({:saved, product})
 
         {:noreply,

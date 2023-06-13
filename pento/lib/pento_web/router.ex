@@ -89,6 +89,10 @@ defmodule PentoWeb.Router do
 
       live("/admin/dashboard", Admin.DashboardLive)
 
+      live("/finder", FinderLive, :index)
+      live("/finder/new", FinderLive, :new)
+      live("/finder/:id/edit", FinderLive, :edit)
+
       # The first part(`live`) is the macro(function) definining the type of request, make available by the `use Pentoweb, :router`
       # The `use` macro injects the PentoWeb.router/0 function into the current module, which in turns import Pheonix.LiveView.Router
       # Format: 1) Macro function 2) URL pattern 3) LiveView module 4) live action

@@ -23,6 +23,12 @@ defmodule Pento.Catalog do
     Repo.all(Product)
   end
 
+  # list product in terms of acending product id
+  def list_products_in_ascending do
+    from(p in Product, order_by: [asc: p.id], select: {p.name, p.id})
+    |> Repo.all()
+  end
+
   def list_products_with_user_rating(user) do
     Product.Query.with_user_ratings(user)
     |> Repo.all()
@@ -46,6 +52,7 @@ defmodule Pento.Catalog do
   def get_product!(id) do
     Repo.get!(Product, id)
     # if preload more than one can do something like Repo.preload([:product_images, :ratings])
+    # NOTE: This is similar to Ecto.Query.preload/3 except it allows you to preload structs after they have been fetched from the database.
     |> Repo.preload(:product_images)
   end
 
@@ -65,6 +72,7 @@ defmodule Pento.Catalog do
 
   """
   def create_product(attrs \\ %{}) do
+    # NOTE: Inserting records using external data while making use of changeset
     %Product{}
     # NOTE: Call creation_changeset instead of changeset
     |> Product.create_or_update_changeset(attrs)
@@ -210,5 +218,12 @@ defmodule Pento.Catalog do
   def products_with_zero_ratings do
     Product.Query.with_zero_ratings()
     |> Repo.all()
+  end
+
+  # NOTE: This is to get the options available for the drop down for Finder page
+
+  def get_avail_product_options() do
+    list_products_in_ascending()
+    |> Enum.uniq()
   end
 end

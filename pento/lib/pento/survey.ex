@@ -20,6 +20,7 @@ defmodule Pento.Survey do
   def list_demographics do
     from(d in Demographic)
     |> preload([:user])
+    # QUESTION Can't remember why need preload product LOL
     |> preload([:product])
     |> Repo.all()
   end
