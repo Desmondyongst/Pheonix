@@ -1,12 +1,9 @@
 <%!-- Generally speaking, this template has three different sections 1. ...heading... 2. ...product...list... 3. ...modal form... --%>
 
-
-
 <%!-- Look at this <.header> ... syntax as a function call to the header component.  --%>
 <%!-- The header component can be found in deps/phoenix/priv/templates/phx.gen.live/core_components.ex --%>
 <.header>
-  Listing Products
-  <%!-- <h1><%= @greeting %></h1> --%>
+  Listing Products <%!-- <h1><%= @greeting %></h1> --%>
   <:actions>
     <.link patch={~p"/products/new"}>
       <.button>New Product</.button>
@@ -40,6 +37,7 @@
     <%!-- Our HEEx template has an :action slot for each product in @products. --%>
     <.link patch={~p"/products/#{product}/edit"}>Edit</.link>
   </:action>
+  <!-- # TODO: To implement the delete function -->
   <:action :let={{id, product}}>
     <.link
       phx-click={JS.push("delete", value: %{id: product.id}) |> hide("##{id}")}
@@ -51,10 +49,15 @@
 </.table>
 
 <%!-- :if is a directive and the element wil show only if the associated value is true --%>
-<.modal :if={@live_action in [:new, :edit]} id="product-modal" show on_cancel={JS.patch(~p"/products")}>
-<%!-- The outer modal provides a window that the user can show and hide.
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="product-modal"
+  show
+  on_cancel={JS.patch(~p"/products")}
+>
+  <%!-- The outer modal provides a window that the user can show and hide.
 The inner component provides a form for editing new projects and creating new ones. --%>
-<%!-- It uses the value of @product.id if it exists, otherwise it sets it to :new. --%>
+  <%!-- It uses the value of @product.id if it exists, otherwise it sets it to :new. --%>
   <.live_component
     module={PentoWeb.ProductLive.FormComponent}
     id={@product.id || :new}

@@ -1,4 +1,3 @@
-
 <.header>
   Finder
   <:actions>
@@ -19,14 +18,26 @@
   <:action :let={{_id, pairing}}>
     <.link patch={~p"/finder/#{pairing.id}/edit"}>Edit</.link>
   </:action>
+  <:action :let={{id, product}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: product.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
 </.table>
 
-
 <%!-- :if is a directive and the element wil show only if the associated value is true --%>
-<.modal :if={@live_action in [:new, :edit]} id="pairing-modal" show on_cancel={JS.patch(~p"/finder")}>
-<%!-- The outer modal provides a window that the user can show and hide.
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="pairing-modal"
+  show
+  on_cancel={JS.patch(~p"/finder")}
+>
+  <%!-- The outer modal provides a window that the user can show and hide.
 The inner component provides a form for editing new projects and creating new ones. --%>
-<%!-- It uses the value of @product.id if it exists, otherwise it sets it to :new. --%>
+  <%!-- It uses the value of @product.id if it exists, otherwise it sets it to :new. --%>
   <!-- NOTE: Need take a look again at this part-->
   <.live_component
     module={PentoWeb.FinderLive.FormComponent}

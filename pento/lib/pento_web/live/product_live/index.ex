@@ -17,7 +17,9 @@ defmodule PentoWeb.ProductLive.Index do
   # We need to call the allow_upload/3 function in update/2 function for live component and in mount for live view
   @impl true
   def mount(_params, _session, socket) do
+    # {:ok, stream(socket, :products, Catalog.list_products())}
     {:ok, stream(socket, :products, Catalog.list_products())}
+
     # {:ok,
     #   socket
     #   |> assign(:greeting, "Welcome to Pento!!")
